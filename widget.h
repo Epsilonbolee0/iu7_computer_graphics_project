@@ -24,6 +24,7 @@
 #include "exceptions/camera_lack_exception.h"
 #include "facade/viewer_facade.h"
 #include "render/qt_drawer.h"
+#include <QTimer>
 
 namespace Ui {
 class Widget;
@@ -57,12 +58,13 @@ public slots:
     void changeLight();
     void load();
     void simulate();
-    //void save();
+    void animate();
 
 protected:
     void keyPressEvent(QKeyEvent *e) override;
 
 private:
+    QTimer _timer;
     Ui::Widget *ui;
     DrawLabel *_draw_label;
     QImage _pixmap;

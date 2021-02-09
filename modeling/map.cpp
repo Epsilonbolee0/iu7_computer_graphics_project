@@ -1,4 +1,5 @@
 #include "map.h"
+#include <cmath>
 
 using modeling::Map;
 
@@ -11,8 +12,10 @@ void Map::resize(std::size_t _size) {
 
 Map::Map(std::string filename) {
     std::ifstream _file;
+    float _buffer_x, _buffer_y, _buffer_z;
     std::size_t x0, y0, z0;
     std::size_t x1, y1, z1;
+    std::string _type, _extras;
     int _cnt;
     float _unnecessary_data;
 
@@ -21,18 +24,32 @@ Map::Map(std::string filename) {
     _file >> _cnt;
 
     for (int i = 0; i < _cnt; i++) {
-        _file >> x0 >> y0 >> z0 ;
-        _file >> z1 >> x1 >> y1;
+        _file >> _type;
+        if (_type == "Parallelepiped") {
+            _file >> _buffer_x >> _buffer_y >> _buffer_z;
+            x0 = round(_buffer_x);
+            y0 = round(_buffer_y);
+            z0 = round(_buffer_z);
 
-        for (std::size_t x = x0; x < x0 + x1; x++) {
-            for (std::size_t z = z0; z < z0 + z1; z++) {
-                if (_data[x][z] < y0 + y1)
-                    _data[x][z] = y0 + y1;
+            _file >> _buffer_x >> _buffer_y >> _buffer_z;
+            z1 = round(_buffer_x);
+            x1 = round(_buffer_y);
+            y1 = round(_buffer_z);
+
+            for (std::size_t x = x0; x < x0 + x1; x++) {
+                for (std::size_t z = z0; z < z0 + z1; z++) {
+                    if (_data[x][z] < y0 + y1)
+                        _data[x][z] = y0 + y1;
+                }
             }
-        }
 
-        for (std::size_t j = 0; j < _skip_after && !_file.eof(); j++) {
-            _file >> _unnecessary_data;
+            for (std::size_t j = 0; j < _skip_after && !_file.eof(); j++) {
+                _file >> _unnecessary_data;
+            }
+        } else {
+            for (std::size_t j = 0; j < 4; j++) {
+                _file >> _extras;
+            }
         }
     }
 

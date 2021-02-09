@@ -3,6 +3,7 @@
 #include <QDebug>
 #include "windows.h"
 #include <fstream>
+#include <QTimer>
 
 Widget::Widget(QWidget *parent):
     QWidget(parent),
@@ -18,6 +19,7 @@ Widget::Widget(QWidget *parent):
     _pixmap.fill(Qt::white);
     setFocusPolicy(Qt::StrongFocus);
     i = 0;
+    connect(&_timer, SIGNAL(timeout()), _draw_label, SLOT(advanceState()));
 }
 
 Widget::~Widget() {
@@ -223,20 +225,27 @@ void Widget::load() {
 }
 
 void Widget::simulate() {
-    Vector3d vec_ = Vector3d(float(ui->water_x->value() - 1), float(ui->water_y->value() - 1), 0);
-    QString cache_name = "presets/" + QString::number(int(ui->water_x->value())) + "_" + QString::number(int(ui->water_y->value())) + "_";
-    cache_name += QString::number(int(ui->volume->value())) + "_" + QString::number(++i) + ".png";
+    Vector3d vec_ = Vector3d(0, 0, 0);
+    QString cache_name = "presets/" + QString::number(1) + "_" + QString::number(1) + "_";
+    cache_name += QString::number(100) + "_";
 
-    qDebug() << cache_name;
     std::ifstream infile(cache_name.toUtf8().constData());
     if (!infile.good()) {
-        commands::SimulateCommand command(vec_, float(ui->volume->value()));
+        commands::SimulateCommand command(vec_, float(100));
         _facade->execCommand(&command);
         render();
-        this->_pixmap.save(cache_name, nullptr, -1);
+        this->_pixmap.save(cache_name + QString::number(++i) + ".png", nullptr, -1);
     } else {
-        qDebug() << 0;
-        _pixmap.load(cache_name);
+        _pixmap.load(cache_name  + QString::number(++i) + ".png");
         _draw_label->update();
+    }
+}
+
+void Widget::animate() {
+    QString cache_name = "presets/wall_";
+    if (_timer.isActive()) {
+        _timer.stop();
+    } else {
+        _timer.start(100);
     }
 }

@@ -24,6 +24,7 @@ public:
     virtual Material readMaterialInfo() = 0;
     virtual std::size_t readSceneInfo() = 0;
     virtual Vector3d readPoint() = 0;
+    virtual std::string llt() = 0;
 };
 
 }

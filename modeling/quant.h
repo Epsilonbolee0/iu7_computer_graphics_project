@@ -22,15 +22,17 @@ public:
     Quant& operator=(const Quant& other_);
 
     std::vector<Quant> tick(std::vector<Cell> cells_);
+    int father();
     static std::queue<Quant> merge(std::queue<Quant> quant_);
 
+    int fallDelta;
 private:
     std::vector<int> visited_cells;
     float volume_;
     Vector3d p_;
     Vector3d v_;
-    const float min_volume_ = 5;
-    const float flow_coeff_ = 0.4;
+    const float min_volume_ = 0.1;
+    const float flow_coeff_ = 0.8;
 };
 
 }

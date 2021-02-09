@@ -73,7 +73,6 @@ float Raytracer::computeLighting(Vector3d &point, Vector3d &normal, Vector3d &vi
                     * std::pow(r_dot_v / (reflected_ray.direction().length() * length_v), specular);
             }
         }
-
     }
 
     return intensity;
@@ -82,7 +81,7 @@ float Raytracer::computeLighting(Vector3d &point, Vector3d &normal, Vector3d &vi
 Vector3d Raytracer::traceRay(Ray ray, float min_t, float max_t, int depth) {
     auto intersection = closestIntersection(ray, min_t, max_t);
     if (not intersection.ok) {
-        return {50, 50, 50};
+        return {255, 140, 0};
     }
 
     auto object = intersection.model->get_object();
@@ -97,34 +96,18 @@ Vector3d Raytracer::traceRay(Ray ray, float min_t, float max_t, int depth) {
     auto local_color = material.color.multScalar(lighting);
 
     if (material.reflective <= 0 or depth <= 0) {
-        return local_color;
+         return local_color;
     }
 
     auto reflected_dir = reflectRay(view, normal);
 
-    std::uniform_real_distribution<float> distribution(0., 1.);
+    std::uniform_real_distribution<double> distribution(0., 1.);
     Vector3d reflected_color = {0, 0, 0};
 
-    float e1 = distribution(generator);
-    float e2 = distribution(generator);
-
-    float a = -50. * material.roughness;
-    float x = - a / 2 + e1 * a;
-    float y = - a / 2 + e2 * a;
-
-    Vector3d u = reflected_dir.cross(normal);
-    Vector3d v = reflected_dir.cross(u).multScalar(y);
-    u = u.multScalar(x);
-    Vector3d test_ray = reflected_dir;
-    test_ray = u.add(v).add(test_ray);
-
-    auto color = traceRay(Ray(intersection_point, test_ray), eps, 20000000, depth - 1);
-    reflected_color = reflected_color.add(color);
-
-    color = local_color.multScalar(1 - material.reflective);
+    auto color = local_color.multScalar(1 - material.reflective);
     reflected_color = reflected_color.multScalar(material.reflective);
-    color.add(reflected_color);
 
+    color.add(reflected_color);
     return color;
 }
 

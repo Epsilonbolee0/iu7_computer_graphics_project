@@ -20,7 +20,7 @@ void Renderer::render(scene::Scene &scene, int sample_num) {
     _buffer = QImage(551, 551, QImage::Format_RGB32);
 
     std::vector<std::thread> threads;
-    int threads_number = 8;
+    int threads_number = 128;
     for (int i = 0; i < threads_number; i++) {
         int n = size.second / threads_number;
         int y0 = -size.second / 2 + i * n;
@@ -71,6 +71,9 @@ void Renderer::threadRender(scene::Scene &scene, int y0, int n) {
             }
             auto result_color = _raytracer.traceRay(Ray(cam_position, direction), 1, 2000000, 3);
             result_color = result_color.clamp();
+            if (result_color.y() == 140) {
+                result_color.setY(result_color.y() + y /4);
+            }
             QColor q_color(result_color.x(), result_color.y(), result_color.z());
 
             //_mutex.lock();

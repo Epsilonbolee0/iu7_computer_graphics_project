@@ -5,7 +5,8 @@ namespace intermediary {
 
 Intermediary::Intermediary():
     _renderer(new render::Renderer),
-    _model_loader(new uploading::FileLoader){}
+    _model_loader(new uploading::FileLoader),
+    _scene(){}
 
 void Intermediary::addModel(const std::string &model_name, std::shared_ptr<objects::GeometryObject> &obj, const Material &mat) {
     auto model = std::make_shared<Model>(model_name);
@@ -47,20 +48,12 @@ void Intermediary::load(std::string file_name, std::string name) {
 
 void Intermediary::addWater(Quant quant_) {
      Water water_;
-     auto water_ptr = std::make_shared<Water>(water_);
-     water_ptr->_set_object(quant_.pos(), quant_.volume());
-     water_ptr->_set_material(quant_.volume());
+     auto water_data = Water::sphere_approx(quant_.pos(), quant_.volume());
 
      std::shared_ptr<objects::GeometryObject> _obj;
 
-     auto triangles = static_cast<objects::Parallelepiped*>(water_ptr->get_object().get())->get_polygons();
-     triangles.resize(triangles.size());
-     for (size_t i = 0; i < triangles.size(); i++) {
-          Model* temp = new Model("water");
-          _obj.reset(triangles[i]);
-          temp->set_object(_obj);
-          temp->set_material(water_ptr->get_material());
-          _scene.addModel(std::shared_ptr<objects::Model>(temp));
+     for (auto& ptr: water_data) {
+          _scene.addModel(ptr);
      }
 }
 

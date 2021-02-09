@@ -14,6 +14,7 @@ public:
 
     void _set_object(Vector3d land_beneath, float volume);
     void _set_material(float volume);
+    static std::vector<std::shared_ptr<Model>> sphere_approx(Vector3d land_beneath, float volume);
 };
 
 const Vector3d LIGHT_BLUE = Vector3d(175, 238, 238);

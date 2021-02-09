@@ -88,7 +88,7 @@ std::vector<Quant> Quant::tick(std::vector<Cell> cells_) {
 
     std::sort(cells_.begin(), cells_.end(), cell_cmp);
     std::size_t dest_numb = std::rand() % (cells_.size()) + 1;
-    qDebug() << dest_numb;
+    //qDebug() << dest_numb;
 
     int delta_summ = 0;
     for (std::size_t i = 0; i < dest_numb; i++) {
@@ -101,6 +101,7 @@ std::vector<Quant> Quant::tick(std::vector<Cell> cells_) {
             Quant new_ = Quant{pred_volume_, cells_[i].position_, Vector3d(0, 0, 0)};
             for (auto& pos_: this->visited_cells)
                 new_.visited_cells.push_back(pos_);
+            new_.fallDelta = cells_[i].delta;
             result_.push_back(new_);
             this->volume_ -= pred_volume_;
         }
@@ -129,4 +130,8 @@ float Quant::volume() {
 
 void Quant::setVolume(float value) {
     this->volume_ = value;
+}
+
+int Quant::father() {
+    return visited_cells.front();
 }

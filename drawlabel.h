@@ -13,7 +13,11 @@ public:
     DrawLabel(QImage & pixmap);
     void paintEvent(QPaintEvent * e);
 
+public slots:
+    void advanceState();
+
 private:
+    std::size_t j;
     QImage * _pixmap;
 };
 
